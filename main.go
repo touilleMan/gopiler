@@ -88,7 +88,7 @@ func GopilerBack() error {
 			out.Write([]byte("when \""))
 			for i := 0; i < 32; i++ {
 				// Address is the line number multiply by 4
-				b := fmt.Sprintf("%b", (line * 4)>>uint(31-i)&1)
+				b := fmt.Sprintf("%b", (line*4)>>uint(31-i)&1)
 				out.Write([]byte(b))
 			}
 			out.Write([]byte("\"=>output<=\""))

@@ -54,7 +54,7 @@ func TestBind(t *testing.T) {
 func TestBadBind(t *testing.T) {
 	var cmds_array = []string{
 		"add $1, $3, $42",     // register 42 doesn't exist
-		"beq $1, $2, 0x10000",  // branch offset is too big
+		"beq $1, $2, 0x10000", // branch offset is too big
 		"beq $1, $2, -0xFFFF", // shift amount is too small
 		"sll $1, $2, 50",      // shift amount is too big
 		"srl $1, $2, -1",      // shift amount is negative
