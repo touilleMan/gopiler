@@ -58,6 +58,7 @@ func TestBadBind(t *testing.T) {
 		"beq $1, $2, -0xFFFF", // shift amount is too small
 		"sll $1, $2, 50",      // shift amount is too big
 		"srl $1, $2, -1",      // shift amount is negative
+		"beq $0, $0, label",   // label has not been declared
 	}
 
 	for _, cmd := range cmds_array {

@@ -123,9 +123,15 @@ func (i i_instruction) Bind() (bin uint32, err error) {
 
 	// Convert the label if it exists
 	if i.label != "" {
-		label := prog_instance.labels[i.label]
-		// PC + 1 + immed = label
-		i.immed = int32(label) - int32(i.pc) - 1
+		label, ok := prog_instance.labels[i.label]
+		if ok {
+			// PC + 1 + immed = label
+			i.immed = int32(label) - int32(i.pc) - 1
+		} else {
+			msg := fmt.Sprintf("Label %s has not been declared", i.label)
+			err = errors.New(msg)
+			return
+		}
 	}
 
 	// Immed is code on 16bits and can be signed or not.
