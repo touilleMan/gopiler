@@ -94,7 +94,7 @@ test2end:
 	or $7, $7, $1
 
 	;; Send the newly created value to the motors
-	lw $1, 0x10($0)
+	sw $1, 0x10($0)
 
 	;; Set back the counter to base value
 	or $5, $0, $4

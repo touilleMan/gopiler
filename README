@@ -1,0 +1,39 @@
+1 - Resume
+~~~~~~~~~~
+
+This is the Gopiler assembler.
+This software is design to turn mips assembly code into text oriented 
+
+2 - Usage :
+~~~~~~~~~~~
+
+Windows :
+Just double click on start_gopiler.bat
+The input used file is input.asm
+The output file is ouput.txt
+(Note that you can change thoses files by editing start_gopiler.bat)
+
+Linux :
+"./gopiler -h" will tell you everything you need !
+
+
+3 - Supported instructions :
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+add
+or
+xor
+sub
+beq
+sll
+slr
+lw
+sw
+slt
+andi
+ori
+addi
+
+label
+
+and comments (start the line by a ;) of course !
