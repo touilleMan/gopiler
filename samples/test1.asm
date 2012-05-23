@@ -9,11 +9,18 @@
 ;;;             $2 tmp register
 ;;;             $1 tmp register
 ;;;             $0 always-zero register
-;;; Used instructions : addi, or, ori, andi, beq, lw
+;;; Used instructions : addi, or, ori, andi, beq, sw
+;;;
+;;; 50mHz CPU, 3 instructions loop for waiting => 17mHz
+;;; motor's max speed : 4kHz => counter 4250
+;;; motor's middle speed : 2kHz => counter : 8500
+;;; motor's low speed : 1kHz => counter : 17000
 
+	;; Do nothing for initialize
+	or $0, $0, $0
 start:
-	;; Set the base value to 0x0000FFFF
-	addi $4, $0, 0xFFFF
+	;; Set the base value to middle speed
+	addi $4, $0, 8500
 
 	;; Initialize the counter to base value
 	or $5, $0, $4
@@ -94,7 +101,7 @@ test2end:
 	or $7, $7, $1
 
 	;; Send the newly created value to the motors
-	sw $1, 0x10($0)
+	sw $7, 0x10($0)
 
 	;; Set back the counter to base value
 	or $5, $0, $4

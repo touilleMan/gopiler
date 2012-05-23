@@ -16,7 +16,7 @@ import (
 %type <val> num
 
 %token <val> NUMBER REG COMMENT
-%token <val> AND OR XOR ADD SUB BEQ SLL SRL LW SW SLT ANDI ORI ADDI
+%token <val> AND OR XOR ADD SUB BEQ SLL SRL LW SW SLT ANDI ORI ADDI J
 %token <name> LABEL
 
 %right ':' ','
@@ -51,6 +51,8 @@ instruction   : AND REG',' REG',' REG { cmd_r($1, $4, $6, $2, 0) }
               | ANDI REG',' REG',' num { cmd_i($1, $4, $2, $6, "") }
               | ORI REG',' REG',' num { cmd_i($1, $4, $2, $6, "") }
               | ADDI REG',' REG',' num { cmd_i($1, $4, $2, $6, "") }
+              | J num { cmd_j($1, $2, "") }
+              | J LABEL { cmd_j($1, 0, $2) }
               ;
 
 num  : NUMBER { $$ = $1 }

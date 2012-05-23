@@ -69,6 +69,8 @@ func TestInstruction(t *testing.T) {
 		"andi $7, $5, -22",
 		"ori $3, $3, 0xFFF",
 		"addi $7, $5, -22",
+		"j 0x42",
+		"j 0x3ffffff",
 	}
 
 	GopilerReset()
@@ -101,6 +103,8 @@ func TestBadInstruction(t *testing.T) {
 		"sw $1, 42($1), $2",
 		"slt $1, label, $3",
 		"sw $5, (0)$2",
+		"j 0x33, $1",
+		"j $1$",
 	}
 
 	GopilerReset()

@@ -28,6 +28,7 @@ var name_instructions = map[string]int{
 	"andi": ANDI,
 	"ori":  ORI,
 	"addi": ADDI,
+	"j":    J,
 }
 
 func (l *AsmLex) Lex(lval *AsmSymType) int {

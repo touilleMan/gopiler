@@ -18,6 +18,8 @@ func TestBind(t *testing.T) {
 		"ori $3, $7, 0xFFF",
 		"sw $5, 0($2)",
 		"lw $1, -4($4)",
+		"j 0x42",
+		"label: j label",
 	}
 	var results = []uint32{
 		0x430824,   // 000000 00010 00011 00001 00000 100100
@@ -31,6 +33,8 @@ func TestBind(t *testing.T) {
 		0x34e30fff, // 001101 00111 00011 0000111111111111
 		0xac450000, // 101011 00010 00101 0000000000000000
 		0x8c81fffc, // 100011 00100 00001 1111111111111100
+		134217794,  // 000010 00000 00000 0000000000101010
+		134217728,  // 000010 00000 00000 0000000000000000
 	}
 
 	for i, cmd := range cmds_array {
@@ -59,6 +63,9 @@ func TestBadBind(t *testing.T) {
 		"sll $1, $2, 50",      // shift amount is too big
 		"srl $1, $2, -1",      // shift amount is negative
 		"beq $0, $0, label",   // label has not been declared
+		"j -42",               // no negative address
+		"j 0x4ffffff",         // adress bigger than 26bits
+		"j label",             // label not defined
 	}
 
 	for _, cmd := range cmds_array {

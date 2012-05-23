@@ -22,6 +22,13 @@ type i_instruction struct {
 	pc    uint32
 }
 
+type j_instruction struct {
+	cmd     int32
+	address uint32
+	label   string
+	pc      uint32
+}
+
 type Binder interface {
 	Bind() (uint32, error)
 }
@@ -49,6 +56,7 @@ var opcode_instructions = map[int32]uint32{
 	ANDI: 0x0c,
 	ORI:  0x0d,
 	ADDI: 0x08,
+	J:    0x02,
 }
 
 var funct_instructions = map[int32]uint32{
@@ -69,6 +77,11 @@ func cmd_r(cmd, rs, rt, rd, shamt int32) {
 
 func cmd_i(cmd, rs, rt, immed int32, label string) {
 	inst := i_instruction{cmd, uint32(rs), uint32(rt), immed, label, uint32(len(prog_instance.commands))}
+	prog_instance.commands = append(prog_instance.commands, inst)
+}
+
+func cmd_j(cmd, address int32, label string) {
+	inst := j_instruction{cmd, uint32(address), label, uint32(len(prog_instance.commands))}
 	prog_instance.commands = append(prog_instance.commands, inst)
 }
 
@@ -140,5 +153,31 @@ func (i i_instruction) Bind() (bin uint32, err error) {
 		return
 	}
 	bin |= uint32(i.immed & 0xffff)
+	return
+}
+
+func (j j_instruction) Bind() (bin uint32, err error) {
+	// Convert the label if it exists
+	if j.label != "" {
+		label, ok := prog_instance.labels[j.label]
+		if ok {
+			// address = label & 0x3fffffd
+			j.address = (label & 0x3fffffd)
+		} else {
+			msg := fmt.Sprintf("Label %s has not been declared", j.label)
+			err = errors.New(msg)
+			return
+		}
+	}
+
+	// Check if the address is 25bits long
+	if j.address < 0 || j.address > 67108864 {
+		msg := fmt.Sprintf("%x is not a valid 26 bits long unsigned address", j.address)
+		err = errors.New(msg)
+		return
+	}
+	// Generate opcode and address
+	bin = (opcode_instructions[j.cmd] & 0x3f) << 26
+	bin |= (j.address & 0x03ffffff)
 	return
 }
