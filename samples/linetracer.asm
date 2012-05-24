@@ -6,17 +6,19 @@
 ;;;             $6 right motor counter
 ;;;             $5 left motor counter
 ;;;             $4 sensors input
+;;;             $3 Sensors counter
 ;;;             $2
 ;;;             $1
 ;;;             $0 always-zero register
 ;;; Used instructions : addi, or, ori, andi, beq, lw, sw
 ;;;
 ;;; CPU : 50mHz
-;;; Default wait loop : 38 instructions
-;;; PMP speed    : 500Hz ==> count : 2631
-;;; Fast speed   : 400Hz ==> count : 3289
-;;; Medium speed : 300Hz ==> count : 4385
-;;; Slow speed   : 200Hz ==> count : 6578
+;;; Waiter loop : 10 instructions * 100 times ==> 1k ==> 50kHz
+;;; PMP speed    : 500Hz ==> wait 100k ==> Motor count : 100
+;;; Fast speed   : 400Hz ==> wait 125k ==> Motor count : 125
+;;; Medium speed : 300Hz ==> wait 167k ==> Motor count : 167
+;;; Slow speed   : 200Hz ==> wait 250k ==> Motor count : 250
+;;; Sensors      : 100Hz ==> wait 500k ==> Sensors count : 500
 
 	;; First instruction should be useless
 	or $0, $0, $0
@@ -25,16 +27,37 @@ start:
 	or $7, $0, $0
 	or $6, $0, $0
 	or $5, $0, $0
+	or $4, $0, $0
+	or $3, $0, $0
 
-	;; Initialize the output
-	sw $0, 0x20($0)
+	;; Initialize the motor
 	sw $0, 0x10($0)
+
+	;; Enable the Leds
+	ori $1, $0, 0x7f
+	sw $1, 0x20($0)
 
 
 ;;;;;;;;;;;;;;; Main loop ;;;;;;;;;;;;;;;;;
-loop: 				; size : 7 instructions + updateS
-	;; Update the sensors
-	beq $0, $0, updateS
+loop:
+	;; Wait counter : 10 instructions long * 100 = 1k instructions
+	ori $1, $0, 100
+waiter:
+	beq $0, $1, testSensors
+	addi $1, $1, -1
+	or $0, $0, $0 		; useless
+	or $0, $0, $0 		; useless
+	or $0, $0, $0 		; useless
+	or $0, $0, $0 		; useless
+	or $0, $0, $0 		; useless
+	or $0, $0, $0 		; useless
+	or $0, $0, $0 		; useless
+	j waiter
+
+testSensors:
+	;; Check and update sensors
+	beq $0, $3, upS
+	addi $3, $3, -1
 
 testMR:
 	;; Check and update right motor
@@ -50,60 +73,15 @@ updateM:
 	;; Sent the newly created value to the motors
 	sw $7, 0x10($0)
 
-	;; Branch to loop
-	beq $0, $0, loop
+	;; Jump for infinite loop
+	j loop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;; Update the sensors  ;;;;;;;;;;;
-updateS:			; size : 31 instructions
-	;; Reset the sensors input register
-	or $4, $0, $0
-
-	;; Get led 0
-	ori $1, $0, 0x1
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Get led 1
-	ori $1, $0, 0x2
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Get led 2
-	ori $1, $0, 0x4
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Get led 3
-	ori $1, $0, 0x8
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Get led 4
-	ori $1, $0, 0x10
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Get led 5
-	ori $1, $0, 0x20
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Get led 6
-	ori $1, $0, 0x40
-	sw $1, 0x20($0)
-	lw $2, 0x21($0)
-	or $4, $4, $2
-
-	;; Stop the leds and go back in the loop
-	sw $0, 0x20($0)
-	beq $0, $0, testMR
+upS:
+	lw $4, 0x21($0)
+	ori $3, $0, 500
+	j testMR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;; Update the right motor ;;;;;;;;;
@@ -165,22 +143,22 @@ MRflush:
 
 	;; No left sensors on so default speed on right motor : slow one
 MRspeedSlow:
-	ori $6, $0, 6578
+	ori $6, $0, 250
 	;; Go back in the loop
 	beq $0, $0, testML
 
 MRspeedPMP:
-	ori $6, $0, 2631
+	ori $6, $0, 100
 	;; Go back in the loop
 	beq $0, $0, testML
 	
 MRspeedFast:
-	ori $6, $0, 3289
+	ori $6, $0, 125
 	;; Go back in the loop
 	beq $0, $0, testML
 	
 MRspeedMiddle:
-	ori $6, $0, 4385
+	ori $6, $0, 167
 	;; Go back in the loop
 	beq $0, $0, testML
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -244,22 +222,22 @@ MLflush:
 
 	;; No left sensors on so default speed on right motor : slow one
 MLspeedSlow:
-	ori $5, $0, 6578
+	ori $5, $0, 250
 	;; Go back in the loop
 	beq $0, $0, updateM
 
 MLspeedPMP:
-	ori $5, $0, 2631
+	ori $5, $0, 100
 	;; Go back in the loop
 	beq $0, $0, updateM
 	
 MLspeedFast:
-	ori $5, $0, 3289
+	ori $5, $0, 125
 	;; Go back in the loop
 	beq $0, $0, updateM
 	
 MLspeedMiddle:
-	ori $5, $0, 4385
+	ori $5, $0, 167
 	;; Go back in the loop
 	beq $0, $0, updateM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

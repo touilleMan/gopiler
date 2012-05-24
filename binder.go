@@ -161,8 +161,7 @@ func (j j_instruction) Bind() (bin uint32, err error) {
 	if j.label != "" {
 		label, ok := prog_instance.labels[j.label]
 		if ok {
-			// address = label & 0x3fffffd
-			j.address = (label & 0x3fffffd)
+			j.address = label
 		} else {
 			msg := fmt.Sprintf("Label %s has not been declared", j.label)
 			err = errors.New(msg)
