@@ -20,19 +20,21 @@ Linux :
 3 - Supported instructions :
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-add
+and
 or
 xor
+add
 sub
 beq
 sll
-slr
+srl
 lw
 sw
 slt
 andi
 ori
 addi
+j
 
 label
 
