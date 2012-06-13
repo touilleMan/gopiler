@@ -1,16 +1,28 @@
-;;; File : linetracer
-;;; Brief : The robot follow a line according to it sensors.
+;;; File : battle
+;;; Brief : The robot is remote controled and fight with another one.
 ;;; Registers : $7 motors output
 ;;;                31--------15-------8---7-------0
 ;;;                          [Bn An B A] [Bn An B A]
-;;;             $6 right motor counter
-;;;             $5 left motor counter
-;;;             $4 sensors input
-;;;             $3 Sensors counter
+;;;             $6 motor counter
+;;;             $5 RF save
+;;;             $4 life counter
+;;;             $3 buzzer counter
 ;;;             $2
 ;;;             $1
 ;;;             $0 always-zero register
 ;;; Used instructions : addi, or, ori, andi, beq, lw, sw
+;;;
+;;; Memory Map :
+;;; 0x000
+;;; 0x001
+;;; 0x010  Set motors
+;;; 0x020  Set leds
+;;; 0x021  Get Sensors
+;;; 0x030  Get RF
+;;; 0x031  Set BUZZER
+;;; 0x032  Set SEG
+;;; 0x033  Set EL_7L
+;;; 0x034  Set ST_7L
 ;;;
 ;;; FPGA clock : 50mHz
 ;;; CPU speed : 50mHz / 4 = 12.5mHz
@@ -30,21 +42,30 @@ start:
 	or $5, $0, $0
 	or $4, $0, $0
 	or $3, $0, $0
+	or $2, $0, $0
+	or $1, $0, $0
 
 	;; Initialize the motor
 	sw $0, 0x10($0)
+	;; Initialize the Buzzer
+	sw $0, 0x31($0)
+	;; Initialize the SEG
+	sw $0, 0x32($0)
+	;; Initialize EL_7L
+	sw $0, 0x33($0)
 
-	;; Enable the Leds
-	ori $1, $0, 0x7f
-	sw $1, 0x20($0)
+	;; The robot starts with 3 lives
+	ori $4, $0, 3
 
-
+	;; Update the display before start
+	j screenThree
+	
 ;;;;;;;;;;;;;;; Main loop ;;;;;;;;;;;;;;;;;
 loop:
 	;; Wait counter
 	ori $1, $0, 25
 waiter:
-	beq $0, $1, testSensors
+	beq $0, $1, checkBuzzer
 	addi $1, $1, -1
 	or $0, $0, $0 		; useless
 	or $0, $0, $0 		; useless
@@ -55,34 +76,104 @@ waiter:
 	or $0, $0, $0 		; useless
 	j waiter
 
-testSensors:
-	;; Check and update sensors
-	beq $0, $3, upS
+checkBuzzer:
+	;; If the Buzzer is on, the robot cannot fire or being hit
+	beq $0, $3, buzzerOff
 	addi $3, $3, -1
+	ori $1, $0, 1
+	sw $1, 0x31($0)
+	j loop
 
-testMR:
-	;; Check and update right motor
-	beq $6, $0, upMR
+buzzerOff:
+	;; Disable the Buzzer
+	sw $0, 0x31($0)
+
+Destroyed:
+	;; If the robot is destroyed, infiny loop here
+	beq $4, $0, -1
+
+checkHit:
+	;; Check the ST_7L sensors to determine if we are hit
+	lw $1, 0x34($0)
+	andi $1, $1, 0x3F
+ 	beq $1, $0, checkRF
+	;; The robot is hit ! Remove a life and update the display
+	addi $4, $4, -1
+	ori $1, $0, 3
+	beq $1, $4, screenThree
+	ori $1, $0, 2
+	beq $1, $4, screenTwo
+	ori $1, $0, 1
+	beq $1, $4, screenOne
+	;; Default comportement : the robot is destroyed
+	j screenZero
+
+setBuzzer:
+	;; Set the buzzer and init it counter
+	ori $1, $0, 1
+	sw $1, 0x31($0)
+	ori $3, $0, 25000    ; buzzer for 500ms ==> counter = 25000
+	j loop
+
+screenThree:
+	;; 3 ==> pins 0,1,2,3,6 ==> 0x4F
+	ori $1, $0, 0x4F
+	sw $1, 0x32($0)
+	j setBuzzer
+screenTwo:
+	;; 2 ==> pins 0,1,3,4,6 ==> 0x5B
+	ori $1, $0, 0x5B
+	sw $1, 0x32($0)
+	j setBuzzer
+screenOne:
+	;; 1 ==> pins 2,3 ==> 0x06
+	ori $1, $0, 0x06
+	sw $1, 0x32($0)
+	j setBuzzer
+screenZero:
+	;; 0 ==> pins 0,1,2,3,4,5 ==> 0x3F
+	ori $1, $0, 0x3F
+	sw $1, 0x32($0)
+	j setBuzzer
+
+checkRF:
+	;; Check the RF input to determine the orders
+	lw $5, 0x30($0)
+checkFire:
+	andi $1, $5, 0x1
+	beq $1, $0, noFire
+	;; The fire order is given
+	ori $1, $0, 0x7
+	sw $1, 0x33($0)
+	j checkMotor
+noFire:
+	sw $0, 0x33($0)
+
+checkMotor:
+	;; Check the motor counter
+	beq $6, $0, checkML
 	addi $6, $6, -1
+	j loop
 
-testML:
-	;; Check and update left motor
-	beq $5, $0, upML
-	addi $5, $5, -1
+checkML:
+	;; Check the order from the RF for the motors
+	andi $1, $5, 0x2
+	beq $1, $0, checkMR
+	j upML
 
-updateM:
+checkMR:
+	;; Check the order from the RF for the motors
+	andi $1, $5, 0x4
+	beq $1, $0, updateMotor
+	j upMR
+
+updateMotor:
+	;; Update motor counter
+	ori $6, $0, 167
 	;; Sent the newly created value to the motors
 	sw $7, 0x10($0)
-
-	;; Jump for infinite loop
+	;; Jump back in the loop
 	j loop
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;; Update the sensors  ;;;;;;;;;;;
-upS:
-	lw $4, 0x21($0)
-	ori $3, $0, 500
-	j testMR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;; Update the right motor ;;;;;;;;;
@@ -123,43 +214,8 @@ MRflush:
 	andi $7, $7, 0xFFF0
 	or $7, $7, $1
 
-	;; Now reset the counter according to the input sensors
-	;;          sensors
-	;; Left 0 1 2 3 4 5 6 Right
-
-	;; Test sensor 0
-	andi $2, $4, 0x1
-	beq $2, $0, MRspeedPMP
-	
-	;; Test sensor 1
-	andi $2, $4, 0x2
-	beq $2, $0, MRspeedFast
-
-	;; Test sensor 2
-	andi $2, $4, 0x4
-	beq $2, $0, MRspeedMiddle
-
-	;; No left sensors on so default speed on right motor : Slow one
-MRspeedSlow:
-	ori $6, $0, 250
 	;; Go back in the loop
-	beq $0, $0, testML
-
-MRspeedPMP:
-	ori $6, $0, 100
-	;; Go back in the loop
-	beq $0, $0, testML
-	
-MRspeedFast:
-	ori $6, $0, 125
-	;; Go back in the loop
-	beq $0, $0, testML
-	
-MRspeedMiddle:
-	ori $6, $0, 167
-	;; Go back in the loop
-	beq $0, $0, testML
-
+	beq $0, $0, updateMotor
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;; Update the left motor ;;;;;;;;;
@@ -202,41 +258,6 @@ MLflush:
 	andi $7, $7, 0xFF0F
 	or $7, $7, $1
 
-	;; Now reset the counter according to the input sensors
-	;;          sensors
-	;; Left 0 1 2 3 4 5 6 Right
-
-	;; Test sensor 6
-	andi $2, $4, 0x40
-	beq $2, $0, MLspeedPMP
-	
-	;; Test sensor 5
-	andi $2, $4, 0x20
-	beq $2, $0, MLspeedFast
-
-	;; Test sensor 4
-	andi $2, $4, 0x10
-	beq $2, $0, MLspeedMiddle
-
-	;; No left sensors on so default speed on right motor : Slow one
-MLspeedSlow:
-	ori $5, $0, 250
 	;; Go back in the loop
-	beq $0, $0, updateM
-
-MLspeedPMP:
-	ori $5, $0, 100
-	;; Go back in the loop
-	beq $0, $0, updateM
-
-MLspeedFast:
-	ori $5, $0, 125
-	;; Go back in the loop
-	beq $0, $0, updateM
-
-MLspeedMiddle:
-	ori $5, $0, 167
-	;; Go back in the loop
-	beq $0, $0, updateM
-
+	beq $0, $0, checkMR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
