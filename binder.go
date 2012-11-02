@@ -148,7 +148,7 @@ func (i i_instruction) Bind() (bin uint32, err error) {
 	}
 
 	// Immed is code on 16bits and can be signed or not.
-	if i.immed < -(1<<15) || i.immed > (1<<16-1) {
+	if i.immed < -(1<<15-1) || i.immed > (1<<16-1) {
 		err = errors.New("immed should be 16bits long")
 		return
 	}
@@ -169,8 +169,8 @@ func (j j_instruction) Bind() (bin uint32, err error) {
 		}
 	}
 
-	// Check if the address is 25bits long
-	if j.address < 0 || j.address > 67108864 {
+	// Check if the address is 26bits long
+	if j.address < 0 || j.address > (1<<26-1) {
 		msg := fmt.Sprintf("%x is not a valid 26 bits long unsigned address", j.address)
 		err = errors.New(msg)
 		return

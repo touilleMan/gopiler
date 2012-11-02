@@ -19,8 +19,8 @@ func GopilerReset() {
 func GopilerFront() error {
 	var file *os.File
 	if *f_input == "" {
+		// Read on STDIN.
 		file = os.NewFile(0, "stdin")
-		fmt.Println(" ### Interactive mode ### ")
 	} else {
 		// Open the input file.
 		var err error
@@ -33,8 +33,8 @@ func GopilerFront() error {
 
 	fi := bufio.NewReader(file)
 	for line := 1; ; line++ {
-		cmd, err := fi.ReadString('\n')
-		if err != nil || (*f_input == "" && string(cmd) == "\n") {
+		cmd, prefix, err := fi.ReadLine()
+		if err != nil || prefix || (*f_input == "" && string(cmd) == "") {
 			// No more lines to parse.
 			return nil
 		}

@@ -59,12 +59,12 @@ func TestBadBind(t *testing.T) {
 	var cmds_array = []string{
 		"add $1, $3, $42",     // register 42 doesn't exist
 		"beq $1, $2, 0x10000", // branch offset is too big
-		"beq $1, $2, -0xFFFF", // shift amount is too small
+		"beq $1, $2, -0x8000", // branch offset is too small
 		"sll $1, $2, 50",      // shift amount is too big
 		"srl $1, $2, -1",      // shift amount is negative
 		"beq $0, $0, label",   // label has not been declared
 		"j -42",               // no negative address
-		"j 0x4ffffff",         // adress bigger than 26bits
+		"j 0x4000000",         // adress bigger than 26bits
 		"j label",             // label not defined
 	}
 
