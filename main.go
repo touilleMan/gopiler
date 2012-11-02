@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-var f_input = flag.String("i", "", "Input file.")
+var f_input = flag.String("i", "", "Input file. (stdin if nothing specified)")
 var f_output = flag.String("o", "", "Output file. (stdout if nothing specified)")
 var f_type = flag.String("t", "vhdl", "Type of output : binary, print, vhdl")
 
@@ -34,7 +34,7 @@ func GopilerFront() error {
 	fi := bufio.NewReader(file)
 	for line := 1; ; line++ {
 		cmd, prefix, err := fi.ReadLine()
-		if err != nil || prefix || (*f_input == "" && string(cmd) == "") {
+		if err != nil || prefix {
 			// No more lines to parse.
 			return nil
 		}

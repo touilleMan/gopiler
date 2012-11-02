@@ -21,8 +21,8 @@ all: $(GOFILES) parser.go
 	go build
 
 clean:
-	rm $(CLEANFILES)
-	rm $(EXE)
+	rm -f $(CLEANFILES)
+	rm -f $(EXE)
 	find . -name "*~" -delete
 
 gofmt:
