@@ -1,41 +1,49 @@
-1 - Resume
-~~~~~~~~~~
+# Gopiler - Simple assembler written in Go
 
-This is the Gopiler assembler.
-This software is design to turn mips assembly code into text oriented 
+Gopiler assemble is just a simple project aiming at creating a MIPS assembler in Go.
 
-2 - Usage :
-~~~~~~~~~~~
+## Features
 
-Windows :
-Just double click on start_gopiler.bat
-The input used file is input.asm
-The output file is ouput.txt
-(Note that you can change thoses files by editing start_gopiler.bat)
+ - Simple easy to hack and readable code : less than 700 lines including tests
+ - No support for ELF or any other system headers, Gopiler only compile your code, nothing more
+ - Three possible types of outputs :
+    - Default binary
+    - Binary in text output
+    - VHDL output to easily include it into embedded designer tools (i.g. Xilinx) 
+    when "00000000000000000000000000000000"=>output<="00000000000000000000000000100101";
+    when "00000000000000000000000000000100"=>output<="00000000000000000011100000100101";
 
-Linux :
-"./gopiler -h" will tell you everything you need !
+## Supported instructions
 
+ - `and`
+ - `or`
+ - `xor`
+ - `add`
+ - `sub`
+ - `beq`
+ - `sll`
+ - `srl`
+ - `lw`
+ - `sw`
+ - `slt`
+ - `andi`
+ - `ori`
+ - `addi`
+ - `j`
+ - labels (`mylabel:`)
+ - and comments (lines starting by `;`) of course !
 
-3 - Supported instructions :
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Quick use
 
-and
-or
-xor
-add
-sub
-beq
-sll
-srl
-lw
-sw
-slt
-andi
-ori
-addi
-j
+### Linux :
+`./gopiler -h` will tell you everything you need !
 
-label
+### Windows :
+Go in win directory and launch `start_gopiler.bat`
+The input used file is `input.asm`
+The output file is `ouput.txt`
+(you can of course change thoses files by editing the bat script !)
 
-and comments (start the line by a ;) of course !
+## License
+
+See the LICENSE file for more details, but basically do what the fuck you to with this code ;-)

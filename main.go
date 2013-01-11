@@ -54,7 +54,6 @@ func GopilerBack() error {
 	if *f_output == "" {
 		// Not ouput file, use stdout
 		out = bufio.NewWriter(os.Stdout)
-		fmt.Println("Compiled code :")
 	} else {
 		// Create the output file
 		file, err := os.Create(*f_output)
