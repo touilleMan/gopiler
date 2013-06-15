@@ -19,14 +19,14 @@ type i_instruction struct {
 	rt    uint32
 	immed int32
 	label string
-	pc    uint32
+	pos   uint32
 }
 
 type j_instruction struct {
 	cmd     int32
 	address uint32
 	label   string
-	pc      uint32
+	pos     uint32
 }
 
 type Binder interface {
@@ -34,9 +34,9 @@ type Binder interface {
 }
 
 type program struct {
-	commands   []Binder
-	labels     map[string]uint32
-	binary_out []uint32
+	instructions []Binder
+	labels       map[string]uint32
+	binary_out   []uint32
 }
 
 var prog_instance program
@@ -72,21 +72,21 @@ var funct_instructions = map[int32]uint32{
 
 func cmd_r(cmd, rs, rt, rd, shamt int32) {
 	inst := r_instruction{cmd, uint32(rs), uint32(rt), uint32(rd), uint32(shamt)}
-	prog_instance.commands = append(prog_instance.commands, inst)
+	prog_instance.instructions = append(prog_instance.instructions, inst)
 }
 
 func cmd_i(cmd, rs, rt, immed int32, label string) {
-	inst := i_instruction{cmd, uint32(rs), uint32(rt), immed, label, uint32(len(prog_instance.commands))}
-	prog_instance.commands = append(prog_instance.commands, inst)
+	inst := i_instruction{cmd, uint32(rs), uint32(rt), immed, label, uint32(len(prog_instance.instructions))}
+	prog_instance.instructions = append(prog_instance.instructions, inst)
 }
 
 func cmd_j(cmd, address int32, label string) {
-	inst := j_instruction{cmd, uint32(address), label, uint32(len(prog_instance.commands))}
-	prog_instance.commands = append(prog_instance.commands, inst)
+	inst := j_instruction{cmd, uint32(address), label, uint32(len(prog_instance.instructions))}
+	prog_instance.instructions = append(prog_instance.instructions, inst)
 }
 
 func label(name string) {
-	prog_instance.labels[name] = uint32(len(prog_instance.commands))
+	prog_instance.labels[name] = uint32(len(prog_instance.instructions))
 }
 
 func (r r_instruction) Bind() (bin uint32, err error) {
@@ -138,8 +138,8 @@ func (i i_instruction) Bind() (bin uint32, err error) {
 	if i.label != "" {
 		label, ok := prog_instance.labels[i.label]
 		if ok {
-			// PC + 1 + immed = label
-			i.immed = int32(label) - int32(i.pc) - 1
+			// pos + 1 + immed = label
+			i.immed = int32(label) - int32(i.pos) - 1
 		} else {
 			msg := fmt.Sprintf("Label %s has not been declared", i.label)
 			err = errors.New(msg)
@@ -147,7 +147,7 @@ func (i i_instruction) Bind() (bin uint32, err error) {
 		}
 	}
 
-	// Immed is code on 16bits and can be signed or not.
+	// Immed is coded on 16bits and can be signed or not.
 	if i.immed < -(1<<15-1) || i.immed > (1<<16-1) {
 		err = errors.New("immed should be 16bits long")
 		return

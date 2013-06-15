@@ -64,7 +64,7 @@ func GopilerBack() error {
 		out = bufio.NewWriter(file)
 	}
 
-	for line, cmd := range prog_instance.commands {
+	for pos, cmd := range prog_instance.instructions {
 		bin, err := cmd.Bind()
 		if err != nil {
 			msg := fmt.Sprint("Binding Error : ", err)
@@ -86,8 +86,8 @@ func GopilerBack() error {
 		case "vhdl":
 			out.Write([]byte("when \""))
 			for i := 0; i < 32; i++ {
-				// Address is the line number multiply by 4
-				b := fmt.Sprintf("%b", (line*4)>>uint(31-i)&1)
+				// Address is the instruction position multiply by 4
+				b := fmt.Sprintf("%b", (pos*4)>>uint(31-i)&1)
 				out.Write([]byte(b))
 			}
 			out.Write([]byte("\"=>output<=\""))

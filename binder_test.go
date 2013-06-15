@@ -45,7 +45,7 @@ func TestBind(t *testing.T) {
 			return
 		}
 
-		bin, err := prog_instance.commands[0].Bind()
+		bin, err := prog_instance.instructions[0].Bind()
 		if err != nil {
 			t.Error("Bind : \"", cmd, "\" (", err, ")")
 		} else if bin != results[i] {
@@ -76,7 +76,7 @@ func TestBadBind(t *testing.T) {
 			return
 		}
 
-		_, err := prog_instance.commands[0].Bind()
+		_, err := prog_instance.instructions[0].Bind()
 		if err == nil {
 			t.Error("Bind : \"", cmd, "\" (should not be binded)")
 		}
@@ -96,7 +96,7 @@ func TestBindComment(t *testing.T) {
 	if AsmParse(&lex) != 0 {
 		t.Error("Parse : \"", cmds, "\" (", lex.err, ")")
 	}
-	for _, cmd := range prog_instance.commands {
+	for _, cmd := range prog_instance.instructions {
 		_, err := cmd.Bind()
 		if err == nil {
 			t.Error("Bind : \"", cmd, "\" (should not be binded)")
