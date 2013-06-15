@@ -73,10 +73,10 @@ func GopilerBack() error {
 
 		switch *f_type {
 		case "binary":
-			out.WriteByte(byte(bin >> 24))
-			out.WriteByte(byte(bin >> 16))
-			out.WriteByte(byte(bin >> 8))
 			out.WriteByte(byte(bin))
+			out.WriteByte(byte(bin >> 8))
+			out.WriteByte(byte(bin >> 16))
+			out.WriteByte(byte(bin >> 24))
 		case "print":
 			for i := 0; i < 32; i++ {
 				b := fmt.Sprintf("%b", bin>>uint(31-i)&1)
