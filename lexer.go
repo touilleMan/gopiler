@@ -14,21 +14,38 @@ type AsmLex struct {
 }
 
 var name_instructions = map[string]int{
-	"and":  AND,
-	"or":   OR,
-	"xor":  XOR,
+	// R instructions
 	"add":  ADD,
+	"addu": ADDU,
+	"and":  AND,
+	"jr":   JR,
+	"nor":  NOR,
+	"or":   OR,
+	"sltu": SLTU,
 	"sub":  SUB,
-	"beq":  BEQ,
-	"sll":  SLL,
-	"srl":  SRL,
-	"lw":   LW,
-	"sw":   SW,
-	"slt":  SLT,
-	"andi": ANDI,
-	"ori":  ORI,
-	"addi": ADDI,
-	"j":    J,
+	"subu": SUBU,
+	// I instructions
+	"addi":  ADDI,
+	"addiu": ADDIU,
+	"andi":  ANDI,
+	"beq":   BEQ,
+	"bneq":  BNEQ,
+	"lbu":   LBU,
+	"lhu":   LHU,
+	"lui":   LUI,
+	"lw":    LW,
+	"ori":   ORI,
+	"sb":    SB,
+	"sh":    SH,
+	"sll":   SLL,
+	"slt":   SLT,
+	"slti":  SLTI,
+	"sltiu": SLTIU,
+	"srl":   SRL,
+	"sw":    SW,
+	// J instructions
+	"j":   J,
+	"jal": JAL,
 }
 
 func (l *AsmLex) Lex(lval *AsmSymType) int {

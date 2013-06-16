@@ -19,21 +19,35 @@ Gopiler assemble is just a simple project aiming at creating a MIPS assembler in
 
 # Supported instructions
 
- - `and`
- - `or`
- - `xor`
  - `add`
- - `sub`
- - `beq`
- - `sll`
- - `srl`
- - `lw`
- - `sw`
- - `slt`
- - `andi`
- - `ori`
  - `addi`
+ - `addiu`
+ - `addu`
+ - `and`
+ - `andi`
+ - `beq`
+ - `bneq`
  - `j`
+ - `jal`
+ - `jr`
+ - `lbu`
+ - `lhu`
+ - `lui`
+ - `lw`
+ - `nor`
+ - `or`
+ - `ori`
+ - `sb`
+ - `sh`
+ - `sll`
+ - `slt`
+ - `slti`
+ - `sltiu`
+ - `sltu`
+ - `srl`
+ - `sw`
+ - `sub`
+ - `subu`
  - labels (`mylabel:`)
  - and comments (lines starting by `;`) of course !
 

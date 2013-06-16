@@ -50,27 +50,45 @@ func TestBadLabel(t *testing.T) {
 
 func TestInstruction(t *testing.T) {
 	var cmds_array = []string{
-		"and $1, $2, $3",
-		"or $1, $2, $3",
-		"xor $1, $2, $3",
+		// R instructions
 		"add $1, $2, $3",
+		"addu $1, $2, $3",
+		"and $1, $2, $3",
+		"jr $1, $2, $3",
+		"nor $1, $2, $3",
+		"or $1, $2, $3",
+		"sltu $1, $2, $3",
 		"sub $1, $2, $3",
+		// I instructions
+		"addi $7, $5, -22",
+		"addiu $7, $5, -22",
+		"andi $7, $5, -22",
 		"beq $1, $2, 111",
 		"beq $1, $2, label",
-		"sll $1, $2, 4",
-		"sll $1, $2, 23",
-		"sll $1, $2, 11123",
-		"srl $1, $2, 42",
-		"lw $1, 0x4242($2)",
-		"sw $1, 023423 ( $3 )",
+		"bneq $1, $2, 111",
+		"bneq $1, $2, label",
+		"lbu $1, 0x442($2)",
+		"lhu $1, 0x1142($20)",
+		"lui $1, 0xFFFF($12)",
 		"lw $1, -0x9998($4)",
-		"sw $1, -0123($6)",
-		"slt $1, $2, $3",
-		"andi $7, $5, -22",
+		"lw $1, 0x4242($2)",
 		"ori $3, $3, 0xFFF",
-		"addi $7, $5, -22",
+		"sb $1, 0x4242($2)",
+		"sh $1, 0x4242($2)",
+		"sll $1, $2, 11123",
+		"sll $1, $2, 23",
+		"sll $1, $2, 4",
+		"slt $1, $2, $3",
+		"slti $1, 0x4242($31)",
+		"sltiu $1, 0x4242($0)",
+		"srl $1, $2, 42",
+		"sw $1, -0123($6)",
+		"sw $1, 023423 ( $3 )",
+		// J instructions
 		"j 0x42",
 		"j 0x3ffffff",
+		"jal 0x42",
+		"jal label",
 	}
 
 	GopilerReset()
@@ -86,10 +104,12 @@ func TestBadInstruction(t *testing.T) {
 	var cmds_array = []string{
 		"and $1, $2, ",
 		"or , $2, $3",
-		"xor $1, $2, $3,",
-		"xor $1, $221, $3",
+		"nor $1, $2, $3,",
+		"nor $1, $221, $3",
 		"add $1, $2, $3, $3",
 		"sub $1, $2, $3 $1",
+		"jr",
+		"sh $1, $2, 32",
 		"beq $1, $2 111",
 		"beq $1, $2, $1",
 		"sll $1, $2, 4$2",
@@ -105,6 +125,8 @@ func TestBadInstruction(t *testing.T) {
 		"sw $5, (0)$2",
 		"j 0x33, $1",
 		"j $1$",
+		"jal 0x33, $1",
+		"jal label:",
 	}
 
 	GopilerReset()
