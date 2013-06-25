@@ -89,6 +89,11 @@ func TestInstruction(t *testing.T) {
 		"j 0x3ffffff",
 		"jal 0x42",
 		"jal label",
+		// Standart naming
+		"add $zero, $at, $gp",
+		"addu $fp, $k0, $t1",
+		"and $s3, $a2, $ra",
+		"jr $3, $sp, $s7",
 	}
 
 	GopilerReset()
@@ -102,6 +107,7 @@ func TestInstruction(t *testing.T) {
 
 func TestBadInstruction(t *testing.T) {
 	var cmds_array = []string{
+		"add $1, $3, $42",     // register 42 doesn't exist
 		"and $1, $2, ",
 		"or , $2, $3",
 		"nor $1, $2, $3,",
@@ -127,6 +133,11 @@ func TestBadInstruction(t *testing.T) {
 		"j $1$",
 		"jal 0x33, $1",
 		"jal label:",
+		// Standart naming
+		"add $zeroo, $bt, $gpg",
+		"addu $fy, $k-, $t11",
+		"and $s8, $a8, $raa",
+		"jr $32, $sp, $s7",
 	}
 
 	GopilerReset()

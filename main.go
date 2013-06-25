@@ -11,7 +11,7 @@ import (
 var f_input = flag.String("i", "", "Input file. (stdin if nothing specified)")
 var f_output = flag.String("o", "", "Output file. (stdout if nothing specified)")
 var f_type = flag.String("t", "vhdl", "Type of output : binary, print, vhdl")
-var f_bootaddr = flag.Uint("b", 0xbfc00000, "Boot address (default : 0xbfc00000)")
+var f_bootaddr = flag.Uint("boot-address", 0xbfc00000, "Boot address (default : 0xbfc00000)")
 
 func GopilerReset() {
 	prog_instance = program{[]Binder{}, make(map[string]uint32), []uint32{}}
