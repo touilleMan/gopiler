@@ -130,7 +130,7 @@ MRflush:
 	;; Test sensor 0
 	andi $2, $4, 0x1
 	beq $2, $0, MRspeedPMP
-	
+
 	;; Test sensor 1
 	andi $2, $4, 0x2
 	beq $2, $0, MRspeedFast
@@ -149,12 +149,12 @@ MRspeedPMP:
 	ori $6, $0, 100
 	;; Go back in the loop
 	beq $0, $0, testML
-	
+
 MRspeedFast:
 	ori $6, $0, 125
 	;; Go back in the loop
 	beq $0, $0, testML
-	
+
 MRspeedMiddle:
 	ori $6, $0, 167
 	;; Go back in the loop
@@ -209,7 +209,7 @@ MLflush:
 	;; Test sensor 6
 	andi $2, $4, 0x40
 	beq $2, $0, MLspeedPMP
-	
+
 	;; Test sensor 5
 	andi $2, $4, 0x20
 	beq $2, $0, MLspeedFast

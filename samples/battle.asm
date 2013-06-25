@@ -59,7 +59,7 @@ start:
 
 	;; Update the display before start
 	j screenThree
-	
+
 ;;;;;;;;;;;;;;; Main loop ;;;;;;;;;;;;;;;;;
 loop:
 	;; Wait counter

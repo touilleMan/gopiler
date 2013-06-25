@@ -6,6 +6,9 @@ import (
 )
 
 func TestBind(t *testing.T) {
+	// Simplify the boot address for the moment
+	*f_bootaddr = 0
+
 	var cmds_array = []string{
 		// R intructions
 		"and $1, $2, $3",
@@ -56,6 +59,39 @@ func TestBind(t *testing.T) {
 		0x3c81fffc, // 001111 00100 00001 1111111111111100
 		134217794,  // 000010 00000000000000000000101010
 		134217728,  // 000010 00000000000000000000000000
+	}
+
+	for i, cmd := range cmds_array {
+		GopilerReset()
+		lex := AsmLex{s: cmd}
+		if AsmParse(&lex) != 0 {
+			t.Error("Parse : \"", cmd, "\" (", lex.err, ")")
+			return
+		}
+
+		bin, err := prog_instance.instructions[0].Bind()
+		if err != nil {
+			t.Error("Bind : \"", cmd, "\" (", err, ")")
+		} else if bin != results[i] {
+			msg := fmt.Sprintf("(binary output differs)\nout  : %b\nreal : %b", bin, results[i])
+			t.Error("Bind : \"", cmd, "\"", msg)
+		}
+	}
+}
+
+func TestJump(t *testing.T) {
+	// Default boot address
+	*f_bootaddr = 0xbfc00000
+
+	var cmds_array = []string{
+		// J on absolute value is not boot address dependent
+		"j 0x42",
+		// But J on label is !
+		"label: j label",
+	}
+	var results = []uint32{
+		134217794,  // 000010 00000000000000000000101010
+		200278016,  // 000010 11111100000000000000000000
 	}
 
 	for i, cmd := range cmds_array {

@@ -11,6 +11,7 @@ import (
 var f_input = flag.String("i", "", "Input file. (stdin if nothing specified)")
 var f_output = flag.String("o", "", "Output file. (stdout if nothing specified)")
 var f_type = flag.String("t", "vhdl", "Type of output : binary, print, vhdl")
+var f_bootaddr = flag.Uint("b", 0xbfc00000, "Boot address (default : 0xbfc00000)")
 
 func GopilerReset() {
 	prog_instance = program{[]Binder{}, make(map[string]uint32), []uint32{}}
@@ -84,10 +85,11 @@ func GopilerBack() error {
 			}
 			out.Write([]byte("\n"))
 		case "vhdl":
+			// Address is the boot address plus the instruction position * 4
+			address := *f_bootaddr + uint(pos*4)
 			out.Write([]byte("when \""))
 			for i := 0; i < 32; i++ {
-				// Address is the instruction position multiply by 4
-				b := fmt.Sprintf("%b", (pos*4)>>uint(31-i)&1)
+				b := fmt.Sprintf("%b", address>>uint(31-i)&1)
 				out.Write([]byte(b))
 			}
 			out.Write([]byte("\"=>output<=\""))
