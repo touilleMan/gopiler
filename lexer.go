@@ -204,6 +204,7 @@ func (l *AsmLex) Error(s string) {
 	msg := s
 	msg += fmt.Sprintln()
 	msg += l.s
+	msg += fmt.Sprintln()
 	for i := 0; i < l.pos; i++ {
 		if l.s[i] == '\t' {
 			msg += "\t"

@@ -8,10 +8,17 @@ import (
 	"os"
 )
 
-var f_input = flag.String("i", "", "Input file. (stdin if nothing specified)")
-var f_output = flag.String("o", "", "Output file. (stdout if nothing specified)")
-var f_type = flag.String("t", "vhdl", "Type of output : binary, print, vhdl")
+var f_stdin = flag.Bool("stdin", false, "Use stdin as input")
+var f_stdout = flag.Bool("stdout", false, "Use stdout as output")
+var f_output = flag.String("output", "a.out", "Output file")
+var f_type = flag.String("type", "binary", "Type of output : binary, print, vhdl")
 var f_bootaddr = flag.Uint("boot-address", 0xbfc00000, "Boot address (default : 0xbfc00000)")
+
+func init() {
+	flag.StringVar(f_output, "o", "a.out", "Short option for -output")
+	flag.StringVar(f_type, "t", "binary", "Short option for -type")
+	flag.UintVar(f_bootaddr, "b", 0xbfc00000, "Short option for -boot-address")
+}
 
 func GopilerReset() {
 	prog_instance = program{[]Binder{}, make(map[string]uint32), []uint32{}}
@@ -19,13 +26,23 @@ func GopilerReset() {
 
 func GopilerFront() error {
 	var file *os.File
-	if *f_input == "" {
+	if *f_stdin {
 		// Read on STDIN.
 		file = os.NewFile(0, "stdin")
 	} else {
-		// Open the input file.
+		// Get back the input files to compile.
+		in_files := flag.Args()
+		if len(in_files) == 0 {
+			msg := fmt.Sprintf("no input files")
+			err := errors.New(msg)
+				return err
+		} else if len(in_files) > 1 {
+			fmt.Println("WARNING : cannot compile more than one file at a time !!!")
+		}
+
+		// Open the first input file.
 		var err error
-		file, err = os.Open(*f_input)
+		file, err = os.Open(in_files[0])
 		if err != nil {
 			return err
 		}
@@ -52,8 +69,8 @@ func GopilerFront() error {
 
 func GopilerBack() error {
 	var out *bufio.Writer
-	if *f_output == "" {
-		// Not ouput file, use stdout
+	if *f_stdout {
+		// Use stdout
 		out = bufio.NewWriter(os.Stdout)
 	} else {
 		// Create the output file
