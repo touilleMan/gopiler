@@ -107,7 +107,7 @@ func TestInstruction(t *testing.T) {
 
 func TestBadInstruction(t *testing.T) {
 	var cmds_array = []string{
-		"add $1, $3, $42",     // register 42 doesn't exist
+		"add $1, $3, $42", // register 42 doesn't exist
 		"and $1, $2, ",
 		"or , $2, $3",
 		"nor $1, $2, $3,",

@@ -35,7 +35,7 @@ func GopilerFront() error {
 		if len(in_files) == 0 {
 			msg := fmt.Sprintf("no input files")
 			err := errors.New(msg)
-				return err
+			return err
 		} else if len(in_files) > 1 {
 			fmt.Println("WARNING : cannot compile more than one file at a time !!!")
 		}
