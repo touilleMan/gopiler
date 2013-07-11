@@ -95,6 +95,8 @@ func TestInstruction(t *testing.T) {
 		"and $s3, $a2, $ra",
 		"jr $3, $sp, $s7",
 		"nop",
+		"move $1, $2",
+		"clear $5",
 	}
 
 	GopilerReset()
@@ -139,6 +141,16 @@ func TestBadInstruction(t *testing.T) {
 		"addu $fy, $k-, $t11",
 		"and $s8, $a8, $raa",
 		"jr $32, $sp, $s7",
+		"nop $1",
+		"nop $1, $2",
+		"nop $1, $2, $3",
+		"move $2",
+		"move $2, $3, $1",
+		"move $2, $3, 0x42",
+		"clear",
+		"clear $2, $1",
+		"clear $2, $3, $1",
+		"clear $2, $3, 0x42",
 	}
 
 	GopilerReset()
