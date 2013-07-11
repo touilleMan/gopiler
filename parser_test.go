@@ -94,6 +94,7 @@ func TestInstruction(t *testing.T) {
 		"addu $fp, $k0, $t1",
 		"and $s3, $a2, $ra",
 		"jr $3, $sp, $s7",
+		"nop",
 	}
 
 	GopilerReset()

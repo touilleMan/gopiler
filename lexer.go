@@ -46,6 +46,8 @@ var name_instructions = map[string]int{
 	// J instructions
 	"j":   J,
 	"jal": JAL,
+	// Pseudo instructions
+	"nop": NOP,
 }
 
 var reg_bind = map[string]int{

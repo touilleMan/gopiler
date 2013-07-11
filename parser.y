@@ -16,7 +16,7 @@ import (
 %type <val> num
 
 %token <val> NUMBER REG COMMENT
-%token <val> AND OR NOR ADD ADDU SUB SUBU JR SLTU BEQ BNEQ SLL SRL LW LBU LHU LUI SLTI SLTIU SB SH SW SLT ANDI ORI ADDI ADDIU J JAL
+%token <val> AND OR NOR ADD ADDU SUB SUBU JR SLTU BEQ BNEQ SLL SRL LW LBU LHU LUI SLTI SLTIU SB SH SW SLT ANDI ORI ADDI ADDIU J JAL NOP
 %token <name> LABEL
 
 %right ':' ','
@@ -71,6 +71,7 @@ instruction   : AND REG',' REG',' REG { cmd_r($1, $4, $6, $2, 0) }
               | J LABEL { cmd_j($1, 0, $2) }
               | JAL num { cmd_j($1, $2, "") }
               | JAL LABEL { cmd_j($1, 0, $2) }
+              | NOP { cmd_i(SLL, 0, 0, 0, "") }
               ;
 
 num  : NUMBER { $$ = $1 }
