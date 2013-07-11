@@ -67,13 +67,13 @@ loop:
 waiter:
 	beq $0, $1, checkBuzzer
 	addi $1, $1, -1
-	or $0, $0, $0 		; useless
-	or $0, $0, $0 		; useless
-	or $0, $0, $0 		; useless
-	or $0, $0, $0 		; useless
-	or $0, $0, $0 		; useless
-	or $0, $0, $0 		; useless
-	or $0, $0, $0 		; useless
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
 	j waiter
 
 checkBuzzer:
