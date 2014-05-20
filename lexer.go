@@ -188,12 +188,7 @@ func (l *AsmLex) Lex(lval *AsmSymType) int {
 		}
 	} else if l.s[l.pos] == ';' {
 		// Comments
-		for _, c := range l.s[l.pos:] {
-			l.pos++
-			if c != '\n' {
-				continue
-			}
-		}
+		l.pos += len(l.s) - l.pos
 		return COMMENT
 	}
 

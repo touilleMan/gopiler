@@ -2,10 +2,6 @@
 
 package main
 
-import (
-         "fmt"
-)
-
 %}
 
 %union{

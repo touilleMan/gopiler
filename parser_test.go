@@ -181,7 +181,7 @@ func TestComment(t *testing.T) {
 		"; everything is commented sub $4, $3, $6\n" +
 		"beq $1, $3, start\n" +
 		"sll $7, $8, 30\n" +
-		";\n;;;\nlabel:\n;"
+		";\n;;;sub $1 bad\n;"
 
 	GopilerReset()
 	lex := AsmLex{s: cmds}
