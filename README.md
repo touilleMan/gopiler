@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/touilleMan/gopiler.svg)](https://travis-ci.org/touilleMan/gopiler)
+
 # Gopiler - Simple assembler written in Go
 
 Gopiler assemble is just a simple project aiming at creating a MIPS assembler in Go.
