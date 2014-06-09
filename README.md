@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/touilleMan/gopiler.svg)](https://travis-ci.org/touilleMan/gopiler)
+[![Build Status](https://travis-ci.org/touilleMan/gopiler.svg?branch=master)](https://travis-ci.org/touilleMan/gopiler)
 
 # Gopiler - Simple assembler written in Go
 
