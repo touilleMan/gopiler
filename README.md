@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/touilleMan/gopiler.svg?branch=master)](https://travis-ci.org/touilleMan/gopiler)
-[ ![Codeship Status for touilleMan/gopiler](https://codeship.io/projects/68e9c780-0b49-0132-b0c1-12fe8603e519/status)](https://codeship.io/projects/31945)
+[ ![Codeship Status for touilleMan/gopiler](https://codeship.io/projects/68e9c780-0b49-0132-b0c1-12fe8603e519/status)](https://codeship.io/projects/31945) 
 
 # Gopiler - Simple assembler written in Go
 
